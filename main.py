@@ -112,6 +112,93 @@ def error():
         if(events == sg.WIN_CLOSED):
             break
 
+def view_admin():
+    sg.theme('Dark Amber')
+    users = start.user()
+    layout = [sg.Text("Username", justification='left'),sg.Text("Password", justification='right')],
+    for i in users:
+        layout+=[ sg.Text(f'{i[0]}'), sg.Text(f'{i[1]}',justification='right')],
+
+    window = sg.Window("Table",layout)
+    event, values = window.read()
+
+
+def del_admin():
+    sg.theme('Dark Amber')
+    del_admin_layout = [ [sg.Text("Enter details of users to add",justification='center')],
+                        [sg.Text('Enter Username'),sg.InputText()],
+                        [sg.Button('Delete')],
+                        [sg.Button('Go Back')]]
+    
+    admin_delpage = sg.Window("Delete User",del_admin_layout,auto_size_text=True, auto_size_buttons=True, resizable=True)
+
+    while True:
+        del_admin_events, del_admin_values = admin_delpage.read()
+        if(del_admin_events=='Delete'):
+            username = del_admin_values[0]
+            delete = start.delete(username)
+            if(delete==True):
+                print("User has been deleted sucessfully")
+                sucess()
+            else:
+                print(delete)
+        if(del_admin_events=='Go Back'):
+            admin_delpage.close()
+            admin()
+
+def add_admin():
+    sg.theme('Dark Amber')
+    add_admin_layout = [ [sg.Text("Enter details of users to add",justification='center')],
+                        [sg.Text('Enter Username'),sg.InputText()],
+                        [sg.Text('Enter password'),sg.InputText()],
+                        [sg.Button('Add')],
+                        [sg.Button('Go Back')]]
+    
+    admin_addpage = sg.Window("Add User",add_admin_layout,auto_size_text=True, auto_size_buttons=True, resizable=True)
+
+    while True:
+        add_admin_events, add_admin_values = admin_addpage.read()
+        if(add_admin_events=='Add'):
+            username = add_admin_values[0]
+            password = add_admin_values[1]
+            register = start.register(username,password)
+            if(register==True):
+                print("User has been added sucessfully")
+                sucess()
+            else:
+                print(register)
+        if(add_admin_events=='Go Back'):
+            admin_addpage.close()
+            admin()
+
+def admin():
+    sg.theme('Dark Amber')
+    admin_layout = [ [sg.Text("Welcome Admin, What do you want to do",justification='center')],
+                    [sg.Button("Add User")],
+                    [sg.Button("Delete User")],
+                    [sg.Button("View Users")],
+                    [sg.Button("Log Out")]]
+
+    adminpage = sg.Window("Admin",admin_layout,auto_size_text=True, auto_size_buttons=True, resizable=True)
+
+    while True:
+        admin_events, admin_values = adminpage.read()
+        if(admin_events == "Add User"):
+            print("add user option selected")
+            adminpage.close()
+            add_admin()
+        if(admin_events == "Delete User"):
+            print("delete user option selected")
+            adminpage.close()
+            del_admin()
+        if(admin_events == "View Users"):
+            print("view user option selected")
+            view_admin()
+        if(admin_events == "Log Out"):
+            adminpage.close()
+            main_window()
+        if(admin_events == sg.WIN_CLOSED):
+            break
 
 def login_window():
     sg.theme('Dark Amber')
@@ -128,6 +215,10 @@ def login_window():
         if(login_events == "Login"):
             username = login_values[0]
             password = login_values[1]
+            if(username=="admin" and password=="admin"):
+                print("admin logged in")
+                loginpage.close()
+                admin()
             login = start.login(username,password)
             if(login==True):
                 print("Log in successful")
